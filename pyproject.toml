@@ -1,18 +1,32 @@
-[tool.poetry]
-name = "gas-performance"
+[project]
+name = "otel-openai-performance-investigation"
 version = "0.1.0"
 description = ""
-authors = ["Tom Gurion <tgurion@mintel.com>"]
+authors = [
+    {name = "Tom Gurion", email = "tgurion@mintel.com"},
+]
 readme = "README.md"
-packages = [{include = "gas_performance"}]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-fastapi = {extras = ["standard"], version = "^0.112.3"}
-langchain-core = "^0.2.38"
-gunicorn = "^23.0.0"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.7",
+    "gunicorn>=23.0.0",
+    "openai>=1.60.0",
+    "opentelemetry-distro>=0.50b0",
+    "opentelemetry-exporter-otlp>=1.29.0",
+    "opentelemetry-instrumentation-asyncio==0.50b0",
+    "opentelemetry-instrumentation-dbapi==0.50b0",
+    "opentelemetry-instrumentation-logging==0.50b0",
+    "opentelemetry-instrumentation-sqlite3==0.50b0",
+    "opentelemetry-instrumentation-threading==0.50b0",
+    "opentelemetry-instrumentation-urllib==0.50b0",
+    "opentelemetry-instrumentation-wsgi==0.50b0",
+    "opentelemetry-instrumentation-click==0.50b0",
+    "opentelemetry-instrumentation-fastapi==0.50b0",
+    "opentelemetry-instrumentation-httpx==0.50b0",
+    "opentelemetry-instrumentation-starlette==0.50b0",
+    "opentelemetry-instrumentation-tortoiseorm==0.50b0",
+    "opentelemetry-instrumentation-openai>=0.36.1",
+    "uvicorn[standard]>=0.34.0",
+    "python-dotenv>=1.0.1",
+    "yappi>=1.6.10",
+]

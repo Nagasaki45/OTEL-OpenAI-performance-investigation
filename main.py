@@ -1,44 +1,49 @@
-import asyncio
 import contextlib
-import cProfile
 import pstats
 
+import yappi
+from dotenv import load_dotenv
 from fastapi import FastAPI
-from langchain_core.runnables import RunnableParallel, RunnableLambda
+from fastapi.responses import StreamingResponse
+from openai import AsyncOpenAI
+
+load_dotenv()
+
+
 
 
 @contextlib.asynccontextmanager
 async def lifespan(app=FastAPI):
-    pr = cProfile.Profile()
-    pr.enable()
+    yappi.start()
     try:
         yield
     finally:
-        # CUMULATIVE is total time spent within function including callees
-        ps = pstats.Stats(pr).sort_stats(pstats.SortKey.CUMULATIVE)
+        stats = yappi.get_func_stats()
+        ps = yappi.convert2pstats(stats.get())
+        # TIME is total time spent within function excluding callees
+        ps = ps.sort_stats(pstats.SortKey.TIME)
         ps.dump_stats("profile.stats")  # Dump profiling info to profile.stats
-        ps.print_stats(.01)
+        ps.print_stats(20)  # Printing the top 20 calls
 
 
 app = FastAPI(lifespan=lifespan)
 
 
-async def one(inputs):
-    await asyncio.sleep(0.1)
-    return 1
+async def generate_joke():
+    client = AsyncOpenAI()
+    stream = await client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": "Tell me a dad joke"}],
+        stream=True
+    )
+
+    async for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            yield chunk.choices[0].delta.content
+
+    yield "\n"
 
 
-async def stream():
-    for i in range(10):
-        await asyncio.sleep(0.01)
-        yield i
-
-
-@app.get("/api/generate")
-async def generate():
-    chain = RunnableParallel(one=RunnableLambda(one))
-    output_stream = chain.astream({})
-    # output_stream = stream()
-    async for _ in output_stream:
-        pass
-    return {}
+@app.get("/")
+async def joke():
+    return StreamingResponse(generate_joke(), media_type="text/plain")
