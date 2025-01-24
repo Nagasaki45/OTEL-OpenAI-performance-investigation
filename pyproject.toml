@@ -29,4 +29,5 @@ dependencies = [
     "uvicorn[standard]>=0.34.0",
     "python-dotenv>=1.0.1",
     "yappi>=1.6.10",
+    "gprof2dot>=2024.6.6",
 ]

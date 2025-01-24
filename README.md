@@ -6,6 +6,7 @@ My team encountered performance issues with our gunicorn / uvicorn / FastAPI / O
 
 - [uv](https://docs.astral.sh/uv/).
 - [ApacheBenchmark](https://httpd.apache.org/docs/2.4/programs/ab.html) (`ab`) for loading the system.
+- [graphviz](https://graphviz.org/) and [xdot](https://graphviz.org/docs/attr-types/xdot/) for interacting with the visual profiling outputs.
 - OpenAI API key. Make sure it's in `.env` (i.e. `echo "OPENAI_API_KEY=<your-key>" > .env`).
 - `uv sync`
 
@@ -31,7 +32,7 @@ When the service is stopped it writes profiling information to `stdout` and to `
 Some useful things you can do with `profile.stats`:
 
 ```bash
-gprof2dot -f pstats profile.stats > profile.dot
+uv run gprof2dot -f pstats profile.stats > profile.dot
 dot -Tpng profile.dot -o profile.png  # to convert the dot file to png
 xdot profile.dot  # for interactive view of the dot file
 ```
